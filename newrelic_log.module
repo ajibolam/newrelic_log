@@ -1,0 +1,58 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+use Monolog\Logger;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function newrelic_log_form_system_logging_settings_alter(&$form, FormStateInterface $form_state) {
+  $config = \Drupal::configFactory()->getEditable('newrelic_log.settings');
+  $form['newrelic_log'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('New Relic Configuration'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+  );
+
+   $form['newrelic_log']['host'] = [
+    '#type'          => 'textfield',
+    '#title'         => t('New Relic Host'),
+    '#default_value' => $config->get('host')
+  ];
+
+  $form['newrelic_log']['license_key'] = [
+    '#type'          => 'textfield',
+    '#title'         => t('New Relic License Key'),
+    '#default_value' => $config->get('license')
+  ];
+
+  $form['newrelic_log']['channel'] = [
+    '#type'          => 'textfield',
+    '#title'         => t('New Relic Log Channel'),
+    '#default_value' => $config->get('channel')
+  ];
+
+  $form['newrelic_log']['log_level'] = [
+    '#type'          => 'select',
+    '#title'         => t('New Relic Log Level'),
+    '#options'       => array_flip(Logger::getLevels()),
+    '#default_value' => $config->get('log_level')
+  ];
+
+  $form['#submit'][] = 'newrelic_log_logging_settings_submit';
+}
+
+/**
+ * Form submission handler for system_logging_settings().
+ *
+ * @see newrelic_log_form_system_logging_settings_alter()
+ */
+function newrelic_log_logging_settings_submit($form, FormStateInterface $form_state) {
+  \Drupal::configFactory()->getEditable('newrelic_log.settings')
+    ->set('host', $form_state->getValue('host'))
+    ->set('license', $form_state->getValue('license_key'))
+    ->set('channel', $form_state->getValue('channel'))
+    ->set('log_level', $form_state->getValue('log_level'))
+    ->save();
+}

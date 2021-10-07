@@ -1,0 +1,2 @@
+host: log-api.newrelic.com
+log_level: 400

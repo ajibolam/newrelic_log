@@ -1,0 +1,39 @@
+<?php /** @noinspection ALL */
+
+/**
+ * Implements hook_requirements().
+ *
+ * @param $phase
+ * @return array
+ */
+function newrelic_log_requirements($phase) {
+  $requirements = [];
+
+  switch ($phase) {
+    case 'install':
+      if (!class_exists('\NewRelic\Monolog\Enricher')) {
+        $requirements['newrelic_log_monolog_enricher'] = [
+          'description' => t('This module requires the newrelic/monolog-enricher library. Make sure it is installed via Composer.'),
+          'severity' => REQUIREMENT_ERROR,
+        ];
+      }
+      break;
+    case 'runtime':
+      $isCOnfigured = \Drupal::service('newrelic_log.handler')->isConfigured();
+      $requirements['newrelic_log_configured'] = [
+        'title' => t('New Relic Log Configuration'),
+        'severity' => $isCOnfigured ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+        'value' => $isCOnfigured ? t('Correctly configured') : t('Not properly configured, license or host missing'),
+      ];
+
+      $canConnect = \Drupal::service('newrelic_log.handler')->canConnect();
+      $requirements['newrelic_log_connect'] = [
+        'title' => t('New Relic Log Connection'),
+        'severity' => $canConnect ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+        'value' => $canConnect ? t('Connection establised') : t('Connection can not be establised, check host and/or license'),
+      ];
+      break;
+  }
+
+  return $requirements;
+}

@@ -1,0 +1,18 @@
+{
+    "name": "ajibolam/newrelic_log",
+    "description": "Ships logs to New Relic through its Log API",
+    "type": "drupal-custom-module",
+    "require": {
+        "php": ">=7.0",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "newrelic/monolog-enricher": "^2.0"
+    },
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Michael Ajibola",
+            "email": "ajibolam@gmail.com"
+        }
+    ]
+}

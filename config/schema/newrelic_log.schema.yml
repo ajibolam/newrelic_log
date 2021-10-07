@@ -1,0 +1,16 @@
+newrelic_log.settings:
+  type: config_object
+  label: 'New Relic Log settings'
+  mapping:
+    host:
+      type: string
+      label: 'Host'
+    license:
+      type: string
+      label: 'License'
+    channel:
+      type: string
+      label: 'Channel'
+    log_level:
+      type: int
+      label: 'Log Level'

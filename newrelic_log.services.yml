@@ -1,0 +1,32 @@
+parameters:
+  newrelic_log.default_channel: nde
+
+services:
+  monolog.webprocessor:
+    class: Monolog\Processor\WebProcessor
+    public: false
+  newrelic.processor:
+    class: NewRelic\Monolog\Enricher\Processor
+    public: false
+  newrelic_log.formatter:
+    class: Drupal\newrelic_log\Formatter
+    public: false
+  newrelic_log.handler:
+    class: Drupal\newrelic_log\Handler
+    arguments: [ '@config.factory' ]
+    calls:
+      - [ setFormatter, [ '@newrelic_log.formatter' ] ]
+  newrelic_log.bufferhandler:
+    class: Drupal\newrelic_log\BufferHandler
+    arguments: [ '@newrelic_log.handler' ]
+    tags:
+      - { name: needs_destruction }
+  monolog.logger:
+    class: Monolog\Logger
+    public: false
+    arguments: ['%newrelic_log.default_channel%', ['@newrelic_log.bufferhandler'], ['@newrelic.processor', '@monolog.webprocessor']]
+  newrelic_log.logger:
+    class: Drupal\newrelic_log\Logger\NewrelicLog
+    arguments: ['@config.factory', '@logger.log_message_parser', '@monolog.logger']
+    tags:
+      - { name: logger }
